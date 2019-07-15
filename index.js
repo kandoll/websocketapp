@@ -1,27 +1,35 @@
-var express= require('express');
-var socket=require('socket.io');
+var express = require("express");
+var socket = require("socket.io");
 
 //App setup
-var app=express();
+var app = express();
 
 //creating a server
 
-var server= app.listen(4000,()=>{
-    console.log('listening to port 4000');
-})
+var server = app.listen(4000, () => {
+  console.log("listening to port 4000");
+});
 
 //static files
-app.use(express.static('public'))
+app.use(express.static("public"));
 
 //socket setup
 
-var io=socket(server);  
+var io = socket(server);
 
 /*socket is a function
  which takes in a parameter -the server w hich
   we wont to work with,which in this case is server that we created */
 
-io.on('connection',(socket)=>{
-    console.log('socket connection established')
-})
+io.on("connection", socket => {
+  console.log("socket connection established");
+  
+  socket.on('chat', data => {
+    io.sockets.emit("chat", data);
+  });
+
+  socket.on('typing',function(data){
+      socket.broadcast.emit('typing',data);
+  })
+});
 //if 10 different clients want to make a connection each one will have a different socket
